@@ -49,10 +49,20 @@
         <button id="analyze-receipt-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center">✨ 領収書から自動入力</button>
         <button id="generate-pdf-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>PDFを発行する</button>
     </div>
-    <form id="main-form" class="w-full max-w-7xl mx-auto">
+    <form id="main-form" class="w-full max-w-5xl mx-auto">
         <div id="reimbursement-form">
             <div id="pdf-page-1" class="printable-area bg-white text-gray-800">
-                <header class="mb-8"><h1 class="text-3xl md:text-4xl font-bold text-center mb-4">立替経費精算書</h1><div class="flex flex-col md:flex-row justify-between items-start md:items-end"><div class="text-left mb-2 md:mb-0"><p class="text-base md:text-lg">株式会社MDエンタテイメント 御中</p></div><div class="text-left md:text-right w-full md:w-auto"><p class="text-base md:text-lg">発行日: <span class="issue-date-pdf"></span></p></div></div></header>
+                <header class="mb-8"><h1 class="text-3xl md:text-4xl font-bold text-center mb-4">立替経費精算書</h1>
+					<div class="flex flex-col md:flex-row justify-between items-start md:items-end">
+						<div class="text-left mb-2 md:mb-0">
+							<p class="text-base md:text-lg">株式会社MDエンタテイメント 御中</p>
+						</div>
+						<div class="text-left md:text-right w-full md:w-auto">
+							<p class="text-base md:text-lg">発行日: <span class="issue-date-pdf"></span>
+							</p>
+						</div>
+					</div>
+				</header>
                 <section id="applicant-info" class="mb-8 p-4 border border-gray-300 rounded-lg"><h2 class="text-xl font-semibold mb-4 pb-2 border-b">申請者情報</h2></section>
                 <section id="bank-info" class="mb-8 p-4 border border-gray-300 rounded-lg"><h2 class="text-xl font-semibold mb-4 pb-2 border-b">振込先口座 <span class="text-red-500 screen-only">*</span></h2></section>
                 <section id="expense-details-section"><h2 class="text-xl font-semibold mb-4 pb-2 border-b">経費明細</h2><div id="expense-items" class="space-y-4"></div></section>
@@ -63,7 +73,7 @@
             </div>
         </div>
     </form>
-    <div class="w-full max-w-7xl mx-auto mt-8 no-print">
+    <div class="w-full max-w-5xl mx-auto mt-8 no-print">
         <div class="p-4 sm:p-6 bg-white rounded-lg shadow-md">
             <h2 class="text-xl font-semibold mb-2 text-gray-700">領収書 添付 (AI自動入力の対象)</h2>
             <p class="text-sm text-gray-500 mb-1">画像(JPG, PNG等)およびPDFファイルのみアップロード可能です。</p>
