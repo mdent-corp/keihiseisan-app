@@ -28,9 +28,6 @@
         @keyframes spin { to { transform: rotate(360deg); } }
         input:required:invalid, select:required:invalid, textarea:required:invalid { border-color: #e53e3e; }
         .expense-item-block { page-break-inside: avoid; }
-		#ai-modal, #help-modal, #mobile-warning-modal { 
-			transition: opacity 0.3s ease; 
-		}
     </style>
 </head>
 <body class="bg-gray-100 py-10">
@@ -95,15 +92,6 @@
 <div id="help-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4 no-print">
     <div class="bg-white rounded-lg p-6 shadow-2xl text-left max-w-lg w-11/12 relative"><h3 class="text-xl font-bold mb-4">勘定科目の説明</h3><button id="close-help-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button><div id="help-modal-content" class="space-y-3 max-h-[70vh] overflow-y-auto"></div></div>
 </div>
-<div id="mobile-warning-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4 no-print">
-    <div class="bg-white rounded-lg p-6 shadow-2xl text-center max-w-sm w-11/12 relative">
-        <h3 class="text-lg font-bold text-red-600 mb-4">PCでのご利用をお願いします</h3>
-        <p class="text-sm text-gray-700 mb-6">本フォームはスマートフォンでの利用はサポートされておりません。
-                <br><br>
-                PDFが正しく出力されないため、必ずPCでのご利用をお願い致します。</p>
-        <button id="close-mobile-warning-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">確認</button>
-    </div>
-</div>
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -124,7 +112,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const helpModal = document.getElementById('help-modal');
     const helpModalContent = document.getElementById('help-modal-content');
     const closeHelpModalBtn = document.getElementById('close-help-modal-btn');
-	closeMobileWarningBtn.addEventListener('click', hideMobileWarning);
     let receiptFiles = [];
     let analyzedReceipts = new Set();
     const applicantInfoContainer = document.getElementById('applicant-info');
@@ -138,8 +125,6 @@ document.addEventListener('DOMContentLoaded', () => {
     };
     addressTextarea.addEventListener('input', () => autoResize(addressTextarea));
     autoResize(addressTextarea); // 初期ロード時にも高さを調整
-	const mobileWarningModal = document.getElementById('mobile-warning-modal');
-	const closeMobileWarningBtn = document.getElementById('close-mobile-warning-btn');
 }
     bankInfoContainer.insertAdjacentHTML('beforeend', `<div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4"><div><label class="block text-sm font-medium text-gray-600 mb-1">金融機関名</label><div class="form-wrapper"><input type="text" class="form-input" placeholder="〇〇銀行" required></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">支店名</label><div class="form-wrapper"><input type="text" class="form-input" placeholder="〇〇支店" required></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">口座種別</label><div class="form-wrapper"><select class="form-select bg-white" required><option value="">選択</option><option>普通</option><option>当座</option></select></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">口座番号</label><div class="form-wrapper"><input type="text" pattern="[0-9]{7}" class="form-input" placeholder="1234567" required title="7桁の半角数字で入力してください"></div></div><div class="md:col-span-2"><label class="block text-sm font-medium text-gray-600 mb-1">口座名義 (カナ)</label><div class="form-wrapper"><input type="text" class="form-input" placeholder="ヤマダ タロウ" required></div></div></div>`);
     const accountTitles = { "旅費交通費": "出張に伴う宿泊費、または電車、バス、タクシー代などの移動にかかった費用です。", "会議費": "会議に伴う飲食代、会場費などです。", "消耗品費": "事務用品や日用品など、短期間で消費する物品の購入費用です。", "通信費": "インターネット料金、電話代、切手代などです。", "接待交際費": "取引先など、事業に関係のある相手をもてなすための費用です。", "雑費": "他のどの勘定科目にも当てはまらない少額の費用です。", "その他": "上記のいずれにも分類されない費用です。" };
@@ -147,8 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const hideModal = () => { aiModal.classList.add('hidden'); };
     const showHelpModal = () => helpModal.classList.remove('hidden');
     const hideHelpModal = () => helpModal.classList.add('hidden');
-	const showMobileWarning = () => mobileWarningModal.classList.remove('hidden');
-	const hideMobileWarning = () => mobileWarningModal.classList.add('hidden');
     const populateHelpModal = () => { let content = '<dl>'; for (const [title, description] of Object.entries(accountTitles)) { content += `<dt class="font-bold text-gray-800">${title}</dt><dd class="text-sm text-gray-600 mb-2">${description}</dd>`; } content += '</dl>'; helpModalContent.innerHTML = content; };
     const addItemRow = (data = {}) => {
         const itemBlock = document.createElement('div');
@@ -282,9 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
     receiptUploader.addEventListener('change', () => handleFileUpload(receiptUploader.files));
     populateHelpModal();
     addItemRow();
-	if (window.innerWidth < 768) {
-    showMobileWarning();
-}
 });
 </script>
 </body>
