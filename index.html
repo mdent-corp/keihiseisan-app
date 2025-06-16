@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>【完成版】立替経費精算書 作成フォーム</title>
+    <title>立替経費精算書 作成フォーム</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
@@ -20,11 +20,10 @@
         .form-select { -webkit-appearance: none; -moz-appearance: none; appearance: none; background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='currentColor' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e"); background-repeat: no-repeat; background-position: right 0.7rem center; background-size: 1em; }
         .form-textarea { height: auto; min-height: 80px; line-height: 1.6; padding: 10px 12px !important; }
         .form-textarea.remarks-field { min-height: 42px; height: 42px; line-height: 1.5; padding: 10px 12px !important; }
-        .autoresize-textarea { resize: none; overflow-y: hidden; height: 42px; line-height: 1.5; padding: 10px 12px !important; }
         .pdf-text { font-size: 13px; line-height: 1.6; min-height: 42px; padding: 10px 2px; white-space: pre-wrap; word-wrap: break-word; box-sizing: border-box; align-items: center; width: 100%; }
         .form-input::placeholder, .form-textarea::placeholder { font-size: 13px; }
         .date-input::-webkit-calendar-picker-indicator { cursor: pointer; }
-        #ai-modal, #help-modal, #mobile-warning-modal { transition: opacity 0.3s ease; }
+        #ai-modal, #help-modal { transition: opacity 0.3s ease; }
         .spinner { border: 3px solid rgba(255, 255, 255, 0.3); border-radius: 50%; border-top-color: #fff; animation: spin 1s ease-in-out infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
         input:required:invalid, select:required:invalid, textarea:required:invalid { border-color: #e53e3e; }
@@ -36,17 +35,34 @@
 <div class="container mx-auto px-2 sm:px-4">
     <div class="w-full max-w-7xl mx-auto mb-8 text-center">
         <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">立替経費精算書 作成フォーム</h1>
-        <p class="text-gray-600 text-sm sm:text-base">必要情報を入力し、領収書を添付してください。入力後、「PDFを発行する」ボタンを押すと精算書が生成されます。<br><br>領収書などの書類をアップロードしてから『領収書から自動入力』を押すとAIが内容を解析し自動的に項目を入力してくれます。<br>AIが解析した情報の正確性には不安定な部分があるため、自動入力された内容に間違いがないか必ずご自身でもご確認をお願いします。</p>
+        <p class="text-gray-600 text-sm sm:text-base">
+			<font size="-1">
+			必要情報を入力し、領収書を添付してください。入力後、「PDFを発行する」ボタンを押すと精算書が生成されます。<br><br>
+			領収書などの書類をアップロードしてから『領収書から自動入力』を押すとAIが内容を解析し自動的に項目を入力してくれます。<br>
+			AIが解析した情報の正確性には不安定な部分があるため、自動入力された内容に間違いがないか必ずご自身でもご確認をお願いします。<br>
+			スマートフォンでの動作はサポートされておりません(PDFが正しく出力されません)ので、PCでのご利用をお願い致します。
+			</font>
+		</p>
     </div>
     <div class="w-full max-w-7xl mx-auto mb-6 flex justify-center items-center flex-wrap gap-4 no-print">
         <button id="add-item-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">+ 経費明細を追加</button>
         <button id="analyze-receipt-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center">✨ 領収書から自動入力</button>
         <button id="generate-pdf-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105"><svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>PDFを発行する</button>
     </div>
-    <form id="main-form" class="w-full max-w-7xl mx-auto">
+    <form id="main-form" class="w-full max-w-5xl mx-auto">
         <div id="reimbursement-form">
             <div id="pdf-page-1" class="printable-area bg-white text-gray-800">
-                <header class="mb-8"><h1 class="text-3xl md:text-4xl font-bold text-center mb-4">立替経費精算書</h1><div class="flex flex-col md:flex-row justify-between items-start md:items-end"><div class="text-left mb-2 md:mb-0"><p class="text-base md:text-lg">株式会社MDエンタテイメント 御中</p></div><div class="text-left md:text-right w-full md:w-auto"><p class="text-base md:text-lg">発行日: <span class="issue-date-pdf"></span></p></div></div></header>
+                <header class="mb-8"><h1 class="text-3xl md:text-4xl font-bold text-center mb-4">立替経費精算書</h1>
+					<div class="flex flex-col md:flex-row justify-between items-start md:items-end">
+						<div class="text-left mb-2 md:mb-0">
+							<p class="text-base md:text-lg">株式会社MDエンタテイメント 御中</p>
+						</div>
+						<div class="text-left md:text-right w-full md:w-auto">
+							<p class="text-base md:text-lg">発行日: <span class="issue-date-pdf"></span>
+							</p>
+						</div>
+					</div>
+				</header>
                 <section id="applicant-info" class="mb-8 p-4 border border-gray-300 rounded-lg"><h2 class="text-xl font-semibold mb-4 pb-2 border-b">申請者情報</h2></section>
                 <section id="bank-info" class="mb-8 p-4 border border-gray-300 rounded-lg"><h2 class="text-xl font-semibold mb-4 pb-2 border-b">振込先口座 <span class="text-red-500 screen-only">*</span></h2></section>
                 <section id="expense-details-section"><h2 class="text-xl font-semibold mb-4 pb-2 border-b">経費明細</h2><div id="expense-items" class="space-y-4"></div></section>
@@ -57,7 +73,7 @@
             </div>
         </div>
     </form>
-    <div class="w-full max-w-7xl mx-auto mt-8 no-print">
+    <div class="w-full max-w-5xl mx-auto mt-8 no-print">
         <div class="p-4 sm:p-6 bg-white rounded-lg shadow-md">
             <h2 class="text-xl font-semibold mb-2 text-gray-700">領収書 添付 (AI自動入力の対象)</h2>
             <p class="text-sm text-gray-500 mb-1">画像(JPG, PNG等)およびPDFファイルのみアップロード可能です。</p>
@@ -70,23 +86,12 @@
         </div>
     </div>
 </div>
-<!-- AI Modal -->
 <div id="ai-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50">
     <div class="bg-white rounded-lg p-8 shadow-2xl text-center flex flex-col items-center"><div id="modal-spinner" class="spinner w-12 h-12 mb-4"></div><p id="modal-text" class="text-lg font-semibold text-gray-800"></p></div>
 </div>
-<!-- Help Modal -->
 <div id="help-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4 no-print">
     <div class="bg-white rounded-lg p-6 shadow-2xl text-left max-w-lg w-11/12 relative"><h3 class="text-xl font-bold mb-4">勘定科目の説明</h3><button id="close-help-modal-btn" class="absolute top-4 right-4 text-gray-500 hover:text-gray-800 text-2xl">&times;</button><div id="help-modal-content" class="space-y-3 max-h-[70vh] overflow-y-auto"></div></div>
 </div>
-<!-- Mobile Warning Modal -->
-<div id="mobile-warning-modal" class="hidden fixed inset-0 bg-gray-900 bg-opacity-75 flex items-center justify-center z-50 p-4 no-print">
-    <div class="bg-white rounded-lg p-6 shadow-2xl text-center max-w-sm w-11/12 relative">
-        <h3 class="text-lg font-bold text-red-600 mb-4">ご利用の環境について</h3>
-        <p class="text-sm text-gray-700 mb-6">本フォームはスマートフォンでの利用はサポートされておりません。<br>PDFが正しく出力されないため、必ずPCでのご利用をお願い致します。</p>
-        <button id="close-mobile-warning-btn" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg">確認</button>
-    </div>
-</div>
-
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
@@ -107,22 +112,26 @@ document.addEventListener('DOMContentLoaded', () => {
     const helpModal = document.getElementById('help-modal');
     const helpModalContent = document.getElementById('help-modal-content');
     const closeHelpModalBtn = document.getElementById('close-help-modal-btn');
-    const mobileWarningModal = document.getElementById('mobile-warning-modal');
-    const closeMobileWarningBtn = document.getElementById('close-mobile-warning-btn');
     let receiptFiles = [];
     let analyzedReceipts = new Set();
     const applicantInfoContainer = document.getElementById('applicant-info');
-    applicantInfoContainer.insertAdjacentHTML('beforeend', `<div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4"><div><label class="block text-sm font-medium text-gray-600 mb-1">氏名 <span class="text-red-500 screen-only">*</span></label><div class="form-wrapper"><input type="text" class="form-input" placeholder="山田 太郎" required></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">屋号 または 活動名</label><div class="form-wrapper"><input type="text" class="form-input" placeholder="〇〇デザイン"></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">住所 <span class="text-red-500 screen-only">*</span></label><div class="form-wrapper"><textarea class="form-textarea autoresize-textarea" placeholder="東京都渋谷区..." required rows="1"></textarea></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">メールアドレス <span class="text-red-500 screen-only">*</span></label><div class="form-wrapper"><input type="email" class="form-input" placeholder="example@email.com" required></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">合計請求金額</label><p class="text-2xl font-bold text-blue-600">¥ <span id="total-amount">0</span></p></div></div>`);
+    applicantInfoContainer.insertAdjacentHTML('beforeend', `<div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4"><div><label class="block text-sm font-medium text-gray-600 mb-1">氏名 <span class="text-red-500 screen-only">*</span></label><div class="form-wrapper"><input type="text" class="form-input" placeholder="山田 太郎" required></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">屋号 または 活動名</label><div class="form-wrapper"><input type="text" class="form-input" placeholder="〇〇デザイン"></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">住所 <span class="text-red-500 screen-only">*</span></label><div class="form-wrapper"><textarea id="address-textarea" class="form-input autoresize-textarea" placeholder="東京都渋谷区..." required rows="1"></textarea></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">メールアドレス <span class="text-red-500 screen-only">*</span></label><div class="form-wrapper"><input type="email" class="form-input" placeholder="example@email.com" required></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">合計請求金額</label><p class="text-2xl font-bold text-blue-600">¥ <span id="total-amount">0</span></p></div></div>`);
     const bankInfoContainer = document.getElementById('bank-info');
+	const addressTextarea = document.getElementById('address-textarea');
+	if (addressTextarea) {
+    const autoResize = (el) => {
+        el.style.height = 'auto';
+        el.style.height = (el.scrollHeight) + 'px';
+    };
+    addressTextarea.addEventListener('input', () => autoResize(addressTextarea));
+    autoResize(addressTextarea); // 初期ロード時にも高さを調整
+}
     bankInfoContainer.insertAdjacentHTML('beforeend', `<div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-4"><div><label class="block text-sm font-medium text-gray-600 mb-1">金融機関名</label><div class="form-wrapper"><input type="text" class="form-input" placeholder="〇〇銀行" required></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">支店名</label><div class="form-wrapper"><input type="text" class="form-input" placeholder="〇〇支店" required></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">口座種別</label><div class="form-wrapper"><select class="form-select bg-white" required><option value="">選択</option><option>普通</option><option>当座</option></select></div></div><div><label class="block text-sm font-medium text-gray-600 mb-1">口座番号</label><div class="form-wrapper"><input type="text" pattern="[0-9]{7}" class="form-input" placeholder="1234567" required title="7桁の半角数字で入力してください"></div></div><div class="md:col-span-2"><label class="block text-sm font-medium text-gray-600 mb-1">口座名義 (カナ)</label><div class="form-wrapper"><input type="text" class="form-input" placeholder="ヤマダ タロウ" required></div></div></div>`);
     const accountTitles = { "旅費交通費": "出張に伴う宿泊費、または電車、バス、タクシー代などの移動にかかった費用です。", "会議費": "会議に伴う飲食代、会場費などです。", "消耗品費": "事務用品や日用品など、短期間で消費する物品の購入費用です。", "通信費": "インターネット料金、電話代、切手代などです。", "接待交際費": "取引先など、事業に関係のある相手をもてなすための費用です。", "雑費": "他のどの勘定科目にも当てはまらない少額の費用です。", "その他": "上記のいずれにも分類されない費用です。" };
     const showModal = (text, showSpinner = true) => { modalText.textContent = text; modalSpinner.style.display = showSpinner ? 'block' : 'none'; aiModal.classList.remove('hidden'); };
     const hideModal = () => { aiModal.classList.add('hidden'); };
     const showHelpModal = () => helpModal.classList.remove('hidden');
     const hideHelpModal = () => helpModal.classList.add('hidden');
-    const showMobileWarning = () => mobileWarningModal.classList.remove('hidden');
-    const hideMobileWarning = () => mobileWarningModal.classList.add('hidden');
-
     const populateHelpModal = () => { let content = '<dl>'; for (const [title, description] of Object.entries(accountTitles)) { content += `<dt class="font-bold text-gray-800">${title}</dt><dd class="text-sm text-gray-600 mb-2">${description}</dd>`; } content += '</dl>'; helpModalContent.innerHTML = content; };
     const addItemRow = (data = {}) => {
         const itemBlock = document.createElement('div');
@@ -240,43 +249,22 @@ document.addEventListener('DOMContentLoaded', () => {
             page2OnwardsEl.classList.remove('pdf-mode');
             cleanupAfterPdf();
             hideModal();
-            issueDatePdfEls.forEach(el => el.textContent = ''; 
+            issueDatePdfEls.forEach(el => el.textContent = ''); 
         }
     };
-    const autoResizeTextarea = (el) => {
-        el.style.height = 'auto';
-        el.style.height = (el.scrollHeight) + 'px';
-    };
-    const updateEventListeners = () => {
-        document.querySelectorAll('.delete-item-btn').forEach(btn => { btn.onclick = () => deleteItemRow(btn); });
-        document.querySelectorAll('.amount').forEach(el => { el.oninput = updateTotalAmount; });
-        document.querySelectorAll('.remove-receipt-btn').forEach(btn => { btn.onclick = () => removeReceipt(btn); });
-        document.querySelectorAll('.help-icon').forEach(icon => { icon.onclick = showHelpModal; });
-        document.querySelectorAll('.autoresize-textarea').forEach(el => {
-            el.addEventListener('input', () => autoResizeTextarea(el));
-            setTimeout(() => autoResizeTextarea(el), 0);
-        });
-    };
-    
+    const updateEventListeners = () => { document.querySelectorAll('.delete-item-btn').forEach(btn => { btn.onclick = () => deleteItemRow(btn); }); document.querySelectorAll('.amount').forEach(el => { el.oninput = updateTotalAmount; }); document.querySelectorAll('.remove-receipt-btn').forEach(btn => { btn.onclick = () => removeReceipt(btn); }); document.querySelectorAll('.help-icon').forEach(icon => { icon.onclick = showHelpModal; }); };
     addItemBtn.addEventListener('click', () => addItemRow());
     generatePdfBtn.addEventListener('click', (e) => { e.preventDefault(); if (!mainForm.checkValidity()) { showModal('赤枠の必須項目をすべて入力してください。', false); setTimeout(hideModal, 3000); mainForm.reportValidity(); return; } generatePDF(); });
     analyzeReceiptBtn.addEventListener('click', analyzeReceiptsWithGemini);
     closeHelpModalBtn.addEventListener('click', hideHelpModal);
     helpModal.addEventListener('click', (e) => { if (e.target === helpModal) hideHelpModal(); });
-    
-    closeMobileWarningBtn.addEventListener('click', hideMobileWarning);
-
     const dropzone = document.getElementById('dropzone');
     dropzone.addEventListener('dragover', (e) => { e.preventDefault(); dropzone.classList.add('border-blue-500', 'bg-blue-50'); });
     dropzone.addEventListener('dragleave', (e) => { e.preventDefault(); dropzone.classList.remove('border-blue-500', 'bg-blue-50'); });
     dropzone.addEventListener('drop', (e) => { e.preventDefault(); dropzone.classList.remove('border-blue-500', 'bg-blue-50'); if (e.dataTransfer.files.length) { handleFileUpload(e.dataTransfer.files); } });
     receiptUploader.addEventListener('change', () => handleFileUpload(receiptUploader.files));
-    
     populateHelpModal();
     addItemRow();
-    if (window.innerWidth < 768) {
-        showMobileWarning();
-    }
 });
 </script>
 </body>
