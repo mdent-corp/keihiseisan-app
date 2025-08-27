@@ -117,42 +117,27 @@
     </div>
 
     <form id="main-form" class="w-full max-w-7xl mx-auto">
-        <div id="reimbursement-form">
-            <div id="pdf-page-1" class="printable-area bg-white text-gray-800">
-                <header class="mb-8">
-                    <h1 class="text-3xl md:text-4xl font-bold text-center mb-4">立替経費精算書</h1>
-                    <div class="flex flex-col md:flex-row justify-between items-start md:items-end">
-                        <div class="text-left mb-2 md:mb-0"><p class="text-base md:text-lg">株式会社MDエンタテイメント 御中</p></div>
-                        <div class="text-left md:text-right w-full md:w-auto"><p class="text-base md:text-lg">発行日: <span class="issue-date-pdf"></span></p></div>
-                    </div>
-                </header>
-    
-                <section id="applicant-info" class="mb-8 p-4 border border-gray-300 rounded-lg">
-                    <h2 class="text-xl font-semibold mb-4 pb-2 border-b">申請者情報</h2>
-                </section>
-    
-                <section id="bank-info" class="mb-8 p-4 border border-gray-300 rounded-lg">
-                     <h2 class="text-xl font-semibold mb-4 pb-2 border-b">振込先口座 <span class="text-red-500 screen-only">*</span></h2>
-                </section>
-                
-                <section id="expense-details-section">
-                    <h2 class="text-xl font-semibold mb-4 pb-2 border-b">経費明細</h2>
-                    <div id="expense-items" class="space-y-4"></div>
-                </section>
-            </div>
-             <div id="pdf-page-2-onwards" class="printable-area bg-white text-gray-800 mt-8" style="display: none;">
-                <header class="mb-8">
-                    <h1 class="text-3xl md:text-4xl font-bold text-center mb-4">立替経費精算書 (続き)</h1>
-                     <div class="flex flex-col md:flex-row justify-between items-start md:items-end">
-                        <div></div>
-                        <div class="text-left md:text-right w-full md:w-auto"><p class="text-base md:text-lg">発行日: <span class="issue-date-pdf"></span></p></div>
-                    </div>
-                </header>
-                 <section>
-                    <h2 class="text-xl font-semibold mb-4 pb-2 border-b">経費明細 (続き)</h2>
-                    <div id="expense-items-continued" class="space-y-4"></div>
-                </section>
-            </div>
+        <div id="reimbursement-form" class="printable-area bg-white text-gray-800">
+            <header class="mb-8">
+                <h1 class="text-3xl md:text-4xl font-bold text-center mb-4">立替経費精算書</h1>
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-end">
+                    <div class="text-left mb-2 md:mb-0"><p class="text-base md:text-lg">株式会社MDエンタテイメント 御中</p></div>
+                    <div class="text-left md:text-right w-full md:w-auto"><p class="text-base md:text-lg">発行日: <span class="issue-date-pdf"></span></p></div>
+                </div>
+            </header>
+
+            <section id="applicant-info" class="mb-8 p-4 border border-gray-300 rounded-lg">
+                <h2 class="text-xl font-semibold mb-4 pb-2 border-b">申請者情報</h2>
+            </section>
+
+            <section id="bank-info" class="mb-8 p-4 border border-gray-300 rounded-lg">
+                 <h2 class="text-xl font-semibold mb-4 pb-2 border-b">振込先口座 <span class="text-red-500 screen-only">*</span></h2>
+            </section>
+            
+            <section id="expense-details-section">
+                <h2 class="text-xl font-semibold mb-4 pb-2 border-b">経費明細</h2>
+                <div id="expense-items" class="space-y-4"></div>
+            </section>
         </div>
     </form>
     <div class="w-full max-w-7xl mx-auto mt-8 no-print">
@@ -449,43 +434,83 @@ document.addEventListener('DOMContentLoaded', () => {
         const dateString = new Date().toLocaleDateString('ja-JP-u-ca-japanese', { year: 'numeric', month: 'long', day: 'numeric' });
         issueDatePdfEls.forEach(el => el.textContent = dateString);
 
-        const page1El = document.getElementById('pdf-page-1');
-        const page2OnwardsEl = document.getElementById('pdf-page-2-onwards');
-        const expenseItems = Array.from(expenseItemsContainer.children);
-        const expenseItemsContinuedContainer = document.getElementById('expense-items-continued');
+        const reimbursementForm = document.getElementById('reimbursement-form');
+        const expenseDetailsSection = document.getElementById('expense-details-section');
 
-        if (expenseItems.length > 1) {
-            expenseItems.slice(1).forEach(item => expenseItemsContinuedContainer.appendChild(item));
-            page2OnwardsEl.style.display = 'block';
-        }
-
-        page1El.classList.add('pdf-mode');
-        page2OnwardsEl.classList.add('pdf-mode');
+        // Helper function to render an element to a PDF page
+        const renderElementToPdfPage = async (element, pdfInstance) => {
+            const canvas = await html2canvas(element, { scale: 2, useCORS: true, windowHeight: element.scrollHeight });
+            const imgData = canvas.toDataURL('image/jpeg', 1.0);
+            let imgHeight = (canvas.height * contentWidth) / canvas.width;
+            let imgWidth = contentWidth;
+            if (imgHeight > availableHeight) {
+                const scaleRatio = availableHeight / imgHeight;
+                imgHeight *= scaleRatio;
+                imgWidth *= scaleRatio;
+            }
+            const x = (pdfWidth - imgWidth) / 2;
+            const y = margin;
+            pdfInstance.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight, undefined, 'MEDIUM');
+        };
 
         try {
+            // --- Page 1: Applicant and Bank Info ---
+            expenseDetailsSection.style.display = 'none';
+            reimbursementForm.classList.add('pdf-mode');
             await new Promise(resolve => setTimeout(resolve, 50));
-            const renderPage = async (element) => {
-                const canvas = await html2canvas(element, { scale: 2, useCORS: true, windowHeight: element.scrollHeight });
-                const imgData = canvas.toDataURL('image/jpeg', 1);
-                let imgHeight = (canvas.height * contentWidth) / canvas.width;
-                let imgWidth = contentWidth;
-                if (imgHeight > availableHeight) {
-                   const scaleRatio = availableHeight / imgHeight;
-                   imgHeight *= scaleRatio;
-                   imgWidth *= scaleRatio;
-                }
-                const x = (pdfWidth - imgWidth) / 2;
-                const y = (pdfPageHeight - imgHeight) / 2;
-                pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight, undefined, 'MEDIUM');
-            };
-            
-            await renderPage(page1El);
+            await renderElementToPdfPage(reimbursementForm, pdf);
+            expenseDetailsSection.style.display = 'block';
+            reimbursementForm.classList.remove('pdf-mode');
 
-            if (expenseItems.length > 1) {
+
+            // --- Pages 2+: Expense Items (2 per page) ---
+            const expenseItems = Array.from(expenseItemsContainer.children);
+            const itemsPerPage = 2;
+
+            for (let i = 0; i < expenseItems.length; i += itemsPerPage) {
+                const chunk = expenseItems.slice(i, i + itemsPerPage);
+                
+                // Create a temporary container for the expense page
+                const expensePageContainer = document.createElement('div');
+                expensePageContainer.className = 'printable-area pdf-mode';
+                expensePageContainer.style.position = 'absolute';
+                expensePageContainer.style.left = '-9999px';
+                
+                // Add "continued" header
+                const continuedHeader = document.createElement('header');
+                continuedHeader.className = 'mb-8';
+                continuedHeader.innerHTML = `
+                    <h1 class="text-3xl md:text-4xl font-bold text-center mb-4">立替経費精算書 (続き)</h1>
+                    <div class="flex justify-end items-end">
+                        <div class="text-right w-full"><p class="text-base md:text-lg">発行日: ${dateString}</p></div>
+                    </div>
+                `;
+                
+                const expenseSection = document.createElement('section');
+                const expenseTitle = document.createElement('h2');
+                expenseTitle.className = 'text-xl font-semibold mb-4 pb-2 border-b';
+                expenseTitle.textContent = '経費明細 (続き)';
+                const itemsDiv = document.createElement('div');
+                itemsDiv.className = 'space-y-4';
+
+                chunk.forEach(item => {
+                    itemsDiv.appendChild(item.cloneNode(true));
+                });
+
+                expenseSection.appendChild(expenseTitle);
+                expenseSection.appendChild(itemsDiv);
+                expensePageContainer.appendChild(continuedHeader);
+                expensePageContainer.appendChild(expenseSection);
+                
+                document.body.appendChild(expensePageContainer);
+                
                 pdf.addPage();
-                await renderPage(page2OnwardsEl);
+                await renderElementToPdfPage(expensePageContainer, pdf);
+                
+                document.body.removeChild(expensePageContainer);
             }
             
+            // --- Subsequent Pages: Receipts ---
             for (const file of receiptFiles) { 
                 pdf.addPage(); let receiptImgDataUrl;
                 if (file.type.startsWith('image/')) {
@@ -529,10 +554,8 @@ document.addEventListener('DOMContentLoaded', () => {
             showModal("PDFの生成に失敗しました。", false);
             setTimeout(hideModal, 3000);
         } finally {
-            expenseItems.slice(1).forEach(item => expenseItemsContainer.appendChild(item));
-            page2OnwardsEl.style.display = 'none';
-            page1El.classList.remove('pdf-mode');
-            page2OnwardsEl.classList.remove('pdf-mode');
+            expenseDetailsSection.style.display = 'block';
+            reimbursementForm.classList.remove('pdf-mode');
             cleanupAfterPdf();
             hideModal();
             issueDatePdfEls.forEach(el => el.textContent = ''); 
