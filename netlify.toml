@@ -1,6 +1,6 @@
 [build]
   functions = "functions"
 
-[functions]
+[functions."*"]
   timeout = 25 # タイムアウトを25秒に延長
 
