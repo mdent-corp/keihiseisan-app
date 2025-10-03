@@ -1,5 +1,5 @@
 // functions/analyze.js
-
+const fetch = require('node-fetch');
 exports.handler = async function(event) {
     // POST以外のリクエストは許可しない
     if (event.httpMethod !== "POST") {
