@@ -362,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
         showModal(`領収書${filesToAnalyze.length}件をAIが解析中...`);
         analyzeReceiptBtn.disabled = true;
         const apiKey = "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
         const schema = {type: "OBJECT", properties: { date: { "type": "STRING"}, payee: { "type": "STRING"}, description: { "type": "STRING"}, amount: { "type": "NUMBER"}, remarks: { "type": "STRING"}, category: { "type": "STRING", "enum": ["旅費交通費", "会議費", "消耗品費", "通信費", "接待交際費", "雑費", "その他"]}}, required: ["date", "payee", "description", "amount", "category"]};
         for (const file of filesToAnalyze) {
             try {
@@ -593,3 +593,5 @@ document.addEventListener('DOMContentLoaded', () => {
 </script>
 </body>
 </html>
+```eof
+
