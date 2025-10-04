@@ -98,17 +98,13 @@
         <h1 class="text-2xl sm:text-3xl font-bold text-gray-800 mb-2">立替経費精算書 作成フォーム</h1>
         <p class="text-gray-600 text-sm sm:text-base">必要情報を入力し、領収書を添付してください。入力後、「PDFを発行する」ボタンを押すと精算書が生成されます。
         <br>
-        <br>領収書などの書類をアップロードしてから『領収書から自動入力』を押すとAIが内容を解析し自動的に項目を入力してくれます。
-        <br>AIが解析した情報の正確性には不安定な部分があるため、自動入力された内容に間違いがないか必ずご自身でもご確認をお願いします。</p>
+        <br>領収書などの書類をアップロードしてから『経費明細』に詳細を記入して下さい。</p>
     </div>
 
     <!-- 操作ボタンエリア -->
     <div class="w-full max-w-7xl mx-auto mb-6 flex justify-center items-center flex-wrap gap-4 no-print">
         <button id="add-item-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
             + 経費明細を追加
-        </button>
-        <button id="analyze-receipt-btn" class="bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105 flex items-center">
-            ✨ 領収書から自動入力
         </button>
         <button id="generate-pdf-btn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-3 px-6 rounded-lg shadow-lg transition-transform transform hover:scale-105">
             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 inline-block mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" /></svg>
