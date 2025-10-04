@@ -28,7 +28,7 @@ exports.handler = async (event) => {
             };
         }
 
-        const model = 'gemini-pro-vision'; // 安定しているVisionモデルに変更
+        const model = 'gemini-1.5-flash'; // 最新の安定モデルに変更
         const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
 
         const payload = {
